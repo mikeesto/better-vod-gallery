@@ -1,5 +1,6 @@
 import { TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET } from '$env/static/private';
-import { formatViews } from '$lib';
+import { formatDistanceToNow } from 'date-fns';
+import { formatViews, formatDuration } from '$lib';
 
 export async function load({ params }) {
 	async function getOAuthToken() {
@@ -62,10 +63,10 @@ export async function load({ params }) {
 			id: vod.id,
 			title: vod.title,
 			thumbnail: vod.thumbnail_url.replace('%{width}', '320').replace('%{height}', '180'),
-			createdAt: vod.created_at,
+			createdAt: formatDistanceToNow(new Date(vod.created_at), { addSuffix: true }),
 			username: vod.user_name,
 			views: formatViews(vod.view_count),
-			duration: vod.duration,
+			duration: formatDuration(vod.duration),
 			url: vod.url
 		};
 	});
