@@ -1,4 +1,5 @@
 import { TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET } from '$env/static/private';
+import { formatViews } from '$lib';
 
 export async function load({ params }) {
 	async function getOAuthToken() {
@@ -63,7 +64,7 @@ export async function load({ params }) {
 			thumbnail: vod.thumbnail_url.replace('%{width}', '320').replace('%{height}', '180'),
 			createdAt: vod.created_at,
 			username: vod.user_name,
-			views: vod.view_count,
+			views: formatViews(vod.view_count),
 			duration: vod.duration,
 			url: vod.url
 		};
