@@ -3,6 +3,18 @@ import { formatDistanceToNow } from 'date-fns';
 import { formatViews, formatDuration } from '$lib';
 
 export async function load() {
+	async function getUserDetails(userIds: string[], oauthToken: string) {
+		const response = await fetch(`https://api.twitch.tv/helix/users?id=${userIds.join('&id=')}`, {
+			headers: {
+				'Client-ID': TWITCH_CLIENT_ID,
+				Authorization: `Bearer ${oauthToken}`
+			}
+		});
+
+		const data = await response.json();
+		return data.data;
+	}
+
 	async function getOAuthToken() {
 		const clientId = TWITCH_CLIENT_ID;
 		const clientSecret = TWITCH_CLIENT_SECRET;
@@ -58,6 +70,13 @@ export async function load() {
 	const categoryId = await getCategoryId(oauthToken);
 	const vods = await getVODsByCategory(categoryId, oauthToken);
 
+	const userIds = [...new Set(vods.map((vod) => vod.user_id))] as string[];
+
+	const users = await getUserDetails(userIds, oauthToken);
+
+	const userMap = new Map<string, string>();
+	users.forEach((user) => userMap.set(user.id, user.profile_image_url));
+
 	const formattedVods = vods.map((vod) => {
 		return {
 			id: vod.id,
@@ -67,7 +86,8 @@ export async function load() {
 			username: vod.user_name,
 			views: formatViews(vod.view_count),
 			duration: formatDuration(vod.duration),
-			url: vod.url
+			url: vod.url,
+			profileImage: userMap.get(vod.user_id)
 		};
 	});
 
