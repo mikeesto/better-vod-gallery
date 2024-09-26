@@ -2,7 +2,7 @@ import { TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET } from '$env/static/private';
 import { formatDistanceToNow } from 'date-fns';
 import { formatViews, formatDuration } from '$lib';
 
-export async function load({ params }) {
+export async function load() {
 	async function getOAuthToken() {
 		const clientId = TWITCH_CLIENT_ID;
 		const clientSecret = TWITCH_CLIENT_SECRET;
@@ -23,7 +23,7 @@ export async function load({ params }) {
 		return data.access_token;
 	}
 
-	async function getCategoryId(oauthToken) {
+	async function getCategoryId(oauthToken: string) {
 		const response = await fetch(
 			`https://api.twitch.tv/helix/games?name=Software%20and%20Game%20Development&period=week&type=archive`,
 			{
@@ -38,7 +38,7 @@ export async function load({ params }) {
 		return data.data[0].id;
 	}
 
-	async function getVODsByCategory(categoryId, oauthToken) {
+	async function getVODsByCategory(categoryId: string, oauthToken: string) {
 		const url = `https://api.twitch.tv/helix/videos?game_id=${categoryId}&sort=views&period=week&type=archive&language=en`;
 
 		const response = await fetch(url, {
