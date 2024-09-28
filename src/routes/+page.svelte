@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+
 	interface Video {
 		id: string;
 		title: string;
@@ -12,7 +14,46 @@
 		profileUrl: string;
 	}
 
-	export let data: { vods: Video[] };
+	export let data: { vods: Video[]; pagination: string | null };
+
+	let isFetching = false;
+
+	onMount(() => {
+		const handleScroll = async () => {
+			if (
+				!isFetching &&
+				window.innerHeight + window.scrollY >= document.body.offsetHeight - 350 &&
+				data.pagination
+			) {
+				isFetching = true;
+
+				try {
+					const res = await fetch('/api/fetchVods', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({ pagination: data.pagination })
+					});
+
+					const newData = await res.json();
+
+					if (newData.vods.length > 0) {
+						data.vods = [...data.vods, ...newData.vods];
+						data.pagination = newData.pagination;
+					}
+				} catch (error) {
+					console.error('Error fetching VODs:', error);
+				} finally {
+					isFetching = false;
+				}
+			}
+		};
+
+		window.addEventListener('scroll', handleScroll);
+
+		return () => window.removeEventListener('scroll', handleScroll);
+	});
 </script>
 
 <div class="max-w-[2000px] m-auto p-3">
