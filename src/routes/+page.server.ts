@@ -87,7 +87,8 @@ export async function load() {
 			views: formatViews(vod.view_count),
 			duration: formatDuration(vod.duration),
 			url: vod.url,
-			profileImage: userMap.get(vod.user_id)
+			profileImage: userMap.get(vod.user_id),
+			profileUrl: `https://www.twitch.tv/${vod.user_login}`
 		};
 	});
 

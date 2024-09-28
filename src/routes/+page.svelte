@@ -9,6 +9,7 @@
 		duration: string;
 		url: string;
 		profileImage: string;
+		profileUrl: string;
 	}
 
 	export let data: { vods: Video[] };
@@ -16,7 +17,7 @@
 
 <div class="max-w-[2000px] m-auto p-3">
 	<h1 class="text-2xl font-bold mb-6">Better VOD Gallery</h1>
-	<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 xl:grid-cols-5">
+	<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
 		{#each data.vods as video}
 			<div class="bg-white rounded-lg shadow-md overflow-hidden">
 				<a href={video.url} class="block relative">
@@ -27,12 +28,20 @@
 						{video.duration}
 					</span>
 				</a>
+
 				<div class="p-3 grid grid-cols-1 gap-2">
-					<h2 class="font-semibold text-sm line-clamp-2">{video.title}</h2>
-					<div class="flex items-center space-x-2">
-						<img src={video.profileImage} alt={video.username} class="w-6 h-6 rounded-full" />
-						<p class="text-gray-600 text-xs">{video.username}</p>
-					</div>
+					<a href={video.url}>
+						<h2 class="font-semibold text-sm hover:cursor-pointer hover:text-blue-500">
+							{video.title}
+						</h2>
+					</a>
+
+					<a href={video.profileUrl} class="hover:cursor-pointer">
+						<div class="flex items-center space-x-2">
+							<img src={video.profileImage} alt={video.username} class="w-6 h-6 rounded-full" />
+							<p class="text-gray-600 text-xs">{video.username}</p>
+						</div>
+					</a>
 					<p class="text-gray-600 text-xs">{video.views} views • {video.createdAt}</p>
 				</div>
 			</div>
