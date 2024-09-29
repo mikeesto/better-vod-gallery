@@ -28,7 +28,7 @@
 				isFetching = true;
 
 				try {
-					const res = await fetch('/api/fetchVods', {
+					const res = await fetch('/api/vods', {
 						method: 'POST',
 						headers: {
 							'Content-Type': 'application/json'
