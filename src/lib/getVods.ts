@@ -63,7 +63,7 @@ async function getVODsByCategory(
 		sort: sort,
 		period: period,
 		type: 'archive',
-		first: '15'
+		first: '100'
 	});
 
 	if (language !== 'all') {
