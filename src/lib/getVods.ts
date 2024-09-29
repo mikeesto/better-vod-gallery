@@ -49,12 +49,32 @@ async function getCategoryId(oauthToken: string) {
 	return data.data[0].id;
 }
 
-async function getVODsByCategory(categoryId: string, oauthToken: string, cursor?: string) {
-	let url = `https://api.twitch.tv/helix/videos?game_id=${categoryId}&sort=views&period=week&type=archive&language=en&first=20`;
+async function getVODsByCategory(
+	categoryId: string,
+	oauthToken: string,
+	cursor?: string,
+	language: string = 'en',
+	period: string = 'week',
+	sort: string = 'views'
+) {
+	const baseUrl = 'https://api.twitch.tv/helix/videos';
+	const params = new URLSearchParams({
+		game_id: categoryId,
+		sort: sort,
+		period: period,
+		type: 'archive',
+		first: '15'
+	});
+
+	if (language !== 'all') {
+		params.append('language', language);
+	}
 
 	if (cursor) {
-		url += `&after=${cursor}`;
+		params.append('after', cursor);
 	}
+
+	const url = `${baseUrl}?${params.toString()}`;
 
 	const response = await fetch(url, {
 		headers: {
@@ -65,14 +85,21 @@ async function getVODsByCategory(categoryId: string, oauthToken: string, cursor?
 	});
 
 	const data = await response.json();
-	console.log('VOD data:', JSON.stringify(data, null, 2));
+	// console.log('VOD data:', JSON.stringify(data, null, 2));
 	return { vods: data.data, pagination: data.pagination };
 }
 
-export async function getVods(cursor?: string) {
+export async function getVods(cursor?: string, language?: string, period?: string, sort?: string) {
 	const oauthToken = await getOAuthToken();
 	const categoryId = await getCategoryId(oauthToken);
-	const { vods, pagination } = await getVODsByCategory(categoryId, oauthToken, cursor);
+	const { vods, pagination } = await getVODsByCategory(
+		categoryId,
+		oauthToken,
+		cursor,
+		language,
+		period,
+		sort
+	);
 
 	const userIds = [...new Set(vods.map((vod) => vod.user_id))] as string[];
 
